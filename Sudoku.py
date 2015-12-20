@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 # g.sorgente: sudoku container class
+import random
 import copy
 import Cell
 
@@ -49,6 +50,29 @@ class Sudoku:
         """Set cell value"""
         self._get_cell(x, y).value = int(value)
 
+    def generate(self):
+        """Generate a new sudoku scheme"""
+        cells_to_fill = random.randint(30, 40) if self.dimension == 4 else random.randint(8, 10)
+
+        # 1. fill a random amount of cells
+        for i in range(cells_to_fill):
+            x = random.randint(0, self.dimension ** 2 - 1)
+            y = random.randint(0, self.dimension ** 2 - 1)
+            value = random.randint(1, self.dimension ** 2)
+
+            cell = self._get_cell(x, y)
+            # if it's not an empty cell or that cell can not contain the random value, then pick another cell
+            if (cell.value != Sudoku.NO_VALUE or not self._cell_can_contain(x, y, value)):
+                i -= 1
+            else:
+                cell.value = value
+
+        # 2. solve the puzzle
+        self._solve_internal()
+
+        # 3. empty some cells, and serve the puzzle
+
+
     # private methods
     def _solve_internal(self):
         """Solve sudoku"""
@@ -91,6 +115,9 @@ class Sudoku:
         # let's continue with solving, first of all, we create a deep clone of the cells
         cells_clone = copy.deepcopy(self.cells)
         available_solution_clone = copy.copy(first_cell.available_solutions)
+        cell_x = first_cell.x
+        cell_y = first_cell.y
+
         for solution_value in available_solution_clone:
             first_cell.value = solution_value
 
@@ -100,12 +127,23 @@ class Sudoku:
 
             # otherwise we keep trying another solution, but first we restore the old
             # "revision" of cells and first_cell
-            first_cell = self._get_cell(first_cell.x, first_cell.y)
             self.cells = copy.deepcopy(cells_clone)
+            first_cell = self._get_cell(cell_x, cell_y)
 
     def _get_cell(self, x, y):
         """Get a specific cell by grid coordinates"""
         return [cell for cell in self.cells if cell.x == x and cell.y == y][0]
+
+    def _cell_can_contain(self, x, y, value):
+        """Checks wether a cell in the same row/column or quadrant has yet that value"""
+        dummy_cell = Cell.Cell(x, y, value, self.dimension)
+        found_cells = [cell for cell in self.cells
+                       if (cell.x == dummy_cell.x or
+                           cell.y == dummy_cell.y or
+                           cell.qindex == dummy_cell.qindex) and
+                           cell.value == dummy_cell.value]
+
+        return len(found_cells) == 0
 
     def _not_solved_cells(self):
         """Get grid cells  specified that are still without a valid solution"""

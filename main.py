@@ -9,12 +9,13 @@ from Sudoku import Sudoku
 if (len(sys.argv) <= 1):
     print("usage:")
     print("python main.py \n\
-        -n (2|3|4)     : initialize an empty sudoku of the specified dimension \n\
+        -n (3|4)       : initialize an empty sudoku of the specified dimension \n\
         -v (values)    : list of values separated by comma \n\
         -a action      : do action \n\
         supported action: \n\
             * print: print in console the sudoku values \n\
-            * solve: solve the sudoku")
+            * solve: solve the sudoku \n\
+            * generate: generate a new sudoku puzzle")
 
 
 sudo = None
@@ -43,6 +44,10 @@ for arg in sys.argv[1::2]:
         if argvalue == "solve":
             sudo.print()
             sudo.solve()
+            sudo.print()
+        if argvalue == "generate":
+            sudo.print()
+            sudo.generate()
             sudo.print()
         else:
             raise Exception("Action not managed: " + argvalue)
