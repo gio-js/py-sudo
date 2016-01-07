@@ -41,11 +41,11 @@ for arg in sys.argv[1::2]:
     if arg == "-a":
         if argvalue == "print":
             sudo.print()
-        if argvalue == "solve":
+        elif argvalue == "solve":
             sudo.print()
             sudo.solve()
             sudo.print()
-        if argvalue == "generate":
+        elif argvalue == "generate":
             sudo.print()
             sudo.generate()
             sudo.print()

@@ -34,7 +34,7 @@ class Sudoku:
             grid += " \n"
             for y in range(cells_number):
                 cell = self._get_cell(x, y)
-                grid += " " + str(cell.value)
+                grid += " {0:02d}".format(cell.value)
         print(grid)
 
     @property
@@ -52,10 +52,15 @@ class Sudoku:
 
     def generate(self):
         """Generate a new sudoku scheme"""
-        cells_to_fill = random.randint(30, 40) if self.dimension == 4 else random.randint(8, 10)
+        cells_to_fill = {
+            2: random.randint(2, 6),
+            3: random.randint(8, 10),
+            4: random.randint(30, 40),
+            5: random.randint(100, 120)
+        }
 
         # 1. fill a random amount of cells
-        for i in range(cells_to_fill):
+        for i in range(cells_to_fill[self.dimension]):
             x = random.randint(0, self.dimension ** 2 - 1)
             y = random.randint(0, self.dimension ** 2 - 1)
             value = random.randint(1, self.dimension ** 2)
@@ -72,6 +77,10 @@ class Sudoku:
 
         # 3. empty some cells, and serve the puzzle
 
+    def clear(self):
+        """Clear all the cells setting NO_VALUE"""
+        for cell in self.cells:
+            cell.value = Sudoku.NO_VALUE
 
     # private methods
     def _solve_internal(self):
